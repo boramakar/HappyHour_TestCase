@@ -7,12 +7,12 @@ using Random = UnityEngine.Random;
 
 public static class HelperFunctions
 {
-    public static char GetRandomLetter()
+    public static string GetRandomLetter()
     {
-        return (char) Random.Range('A', 'Z');
+        return ((char) Random.Range('A', 'Z')).ToString();
     }
     
-    public static char GetRandomLetterByFrequency(List<Tuple<float, char>> frequencyTable)
+    public static string GetRandomLetterByFrequency(List<Tuple<float, string>> frequencyTable)
     {
         var randomValue = Random.value;
         foreach (var pair in frequencyTable.Where(pair => randomValue <= pair.Item1))

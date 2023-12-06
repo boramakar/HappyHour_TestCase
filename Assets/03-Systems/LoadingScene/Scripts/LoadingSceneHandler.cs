@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +12,7 @@ namespace HappyTroll
         [SerializeField] private TextMeshProUGUI percentageText;
         [SerializeField] private TextMeshProUGUI loadingText;
         [SerializeField] private Slider loadingBar;
-        [SerializeField] private float animationDuration;
+        [MinValue(0.05f)][SerializeField] private float animationDuration;
         [SerializeField] private string[] loadingTexts;
         
         private int _animationIndex;

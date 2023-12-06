@@ -12,6 +12,7 @@ namespace HappyTroll
         public GameParameters gameParameters;
 
         public Camera mainCamera;
+        [HideInInspector] public List<string> currentWordList; // Should ideally be placed in a different manager
 
         protected override void Awake()
         {
@@ -32,7 +33,8 @@ namespace HappyTroll
 
         private void Start()
         {
-            EventManager.GameManagerReadyEvent();
+            // EventManager.GameManagerReadyEvent();
+            TransitionManager.Instance.ChangeScene(Enums.SceneType.GameplayScene, true);
         }
 
         public void RegisterCamera(Camera cam)

@@ -134,5 +134,23 @@ namespace HappyTroll
 #endif
             OnWordFound?.Invoke(word);
         }
+
+        public static event Action<int, int> OnGridResize;
+        public static void GridResizeEvent(int rows, int columns)
+        {
+#if _ENABLE_LOGS_
+            Debug.Log($"Event - GridResizeEvent: ({rows}, {columns})");
+#endif
+            OnGridResize?.Invoke(rows, columns);
+        }
+        
+        public static event Action OnGridRefill;
+        public static void GridRefillEvent()
+        {
+#if _ENABLE_LOGS_
+            Debug.Log($"Event - GridRefillEvent");
+#endif
+            OnGridRefill?.Invoke();
+        }
     }
 }
