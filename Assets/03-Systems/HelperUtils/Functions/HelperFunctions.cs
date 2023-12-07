@@ -7,9 +7,9 @@ using Random = UnityEngine.Random;
 
 public static class HelperFunctions
 {
-    public static string GetRandomLetter()
+    public static char GetRandomLetter()
     {
-        return ((char) Random.Range('A', 'Z')).ToString();
+        return (char) Random.Range('A', 'Z');
     }
     
     public static string GetRandomLetterByFrequency(List<Tuple<float, string>> frequencyTable)

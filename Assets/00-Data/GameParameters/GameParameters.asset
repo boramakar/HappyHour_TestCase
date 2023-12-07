@@ -20,7 +20,7 @@ MonoBehaviour:
   gridLineWidth: 0.12
   gridMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   useFrequency: 0
-  rowCount: 50
-  columnCount: 50
+  rowCount: 8
+  columnCount: 8
   cameraZOffset: -10
-  cameraPadding: 0.5
+  cameraPadding: 0.4

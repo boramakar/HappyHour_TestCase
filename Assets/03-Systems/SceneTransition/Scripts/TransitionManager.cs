@@ -14,6 +14,7 @@ namespace HappyTroll
         private string _postLoadingScene;
         private AsyncOperation _loadingOp;
         private Action<float> _progressCallback;
+        private bool _allowFadeIn;
 
         protected override void Awake()
         {
@@ -21,8 +22,23 @@ namespace HappyTroll
 
             _transitionHandler = GetComponentInChildren<ITransitionHandler>();
             canHandleTransitions = (_transitionHandler != null);
-            
+        }
+
+        private void OnEnable()
+        {
             SceneManager.sceneLoaded += HandleSceneLoaded;
+            EventManager.OnSceneTransitionComplete += HandleFadeoutComplete;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
+            EventManager.OnSceneTransitionComplete -= HandleFadeoutComplete;
+        }
+
+        private void HandleFadeoutComplete()
+        {
+            _allowFadeIn = true;
         }
 
         private void HandleSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
@@ -31,9 +47,11 @@ namespace HappyTroll
             
             if (loadSceneMode == LoadSceneMode.Additive)
                 return;
+
+            if (!canHandleTransitions) return;
             
-            if(canHandleTransitions)
-                _transitionHandler.FadeOut(EventManager.SceneTransitionCompleteEvent);
+            _allowFadeIn = false;
+            _transitionHandler.FadeOut(EventManager.SceneTransitionCompleteEvent);
         }
 
         public void ChangeScene(Enums.SceneType sceneType, bool useLoadingScene)
@@ -76,6 +94,11 @@ namespace HappyTroll
             }
     
             _progressCallback?.Invoke(1f);
+            
+            // Wait for fadeOut animation to complete to avoid bad transitions
+            while (!_allowFadeIn)
+                yield return null;
+            
             _transitionHandler.FadeIn(AllowSceneChange);
         }
 

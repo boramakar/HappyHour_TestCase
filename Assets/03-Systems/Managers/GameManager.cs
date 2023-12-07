@@ -33,8 +33,10 @@ namespace HappyTroll
 
         private void Start()
         {
-            // EventManager.GameManagerReadyEvent();
-            TransitionManager.Instance.ChangeScene(Enums.SceneType.GameplayScene, true);
+            EventManager.GameManagerReadyEvent();
+            
+            // Placeholder for a splash video
+            DOVirtual.DelayedCall(2, () => TransitionManager.Instance.ChangeScene(Enums.SceneType.GameplayScene, true));
         }
 
         public void RegisterCamera(Camera cam)

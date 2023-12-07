@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using HappyTroll;
 using Sirenix.OdinInspector;
 using TMPro;
+using Unity.Collections;
 using UnityEngine;
 
 public class GridHandler : MonoBehaviour
@@ -19,9 +20,10 @@ public class GridHandler : MonoBehaviour
     private int _gridRowCount;
     private int _gridColumnCount;
     private float _gridCellSize;
-    private List<List<TextMeshPro>> _gridContents;
     private bool _isGridFilled;
     private AnimationCurve _lineRendererWidthCurve;
+    private TextMeshPro[,] _gridContents;
+    private char[,] _virtualGrid;
 
     private void Awake()
     {
@@ -36,6 +38,7 @@ public class GridHandler : MonoBehaviour
     {
         ClearGrid();
         GenerateGrid();
+        FillGrid();
     }
 
     private void OnEnable()
@@ -59,6 +62,9 @@ public class GridHandler : MonoBehaviour
         GenerateRows();
         GenerateColumns();
         GameManager.Instance.mainCamera.GetComponent<MainCameraHandler>().AdjustToGrid(_gridRowCount, _gridColumnCount, _gridCellSize);
+        
+        _gridContents = new TextMeshPro[_gridColumnCount, _gridRowCount];
+        _virtualGrid = new char[_gridColumnCount, _gridRowCount];
     }
 
     private void GenerateBorder()
@@ -113,6 +119,8 @@ public class GridHandler : MonoBehaviour
 
     private void FillGrid()
     {
+        // Could use if inside the loop to reduce this to a single block but it will increase the overall cost
+        // Could separate this into two different methods but I'm lazy and the responsibilities would be the same
         if(!_isGridFilled)
         {
             var initialRowOffset = -(_gridRowCount - 1) * _gridCellSize * .5f;
@@ -121,9 +129,16 @@ public class GridHandler : MonoBehaviour
             {
                 for (var j = 0; j < _gridColumnCount; j++)
                 {
-                    var position = new Vector3(initialColumnOffset * _gridCellSize, initialRowOffset * _gridCellSize);
-                    var textMesh = Instantiate(gridContentPrefab, position, Quaternion.identity, gridContentParent);
-                    _gridContents[i][j].text = GetRandomLetter(_gameParameters.useFrequency);
+                    var position = new Vector3(
+                        initialColumnOffset + (j * _gridCellSize), 
+                        initialRowOffset + (i * _gridCellSize)
+                        );
+                    var textMesh = Instantiate(gridContentPrefab, position, Quaternion.identity, gridContentParent).GetComponent<TextMeshPro>();
+                    // Could refactor into a method but it will cause unnecessary overhead
+                    var randomLetter = GetRandomLetter(_gameParameters.useFrequency);
+                    textMesh.text = randomLetter.ToString();
+                    _gridContents[j,i] = textMesh;
+                    _virtualGrid[j,i] = randomLetter;
                 }
             }
 
@@ -135,17 +150,20 @@ public class GridHandler : MonoBehaviour
             {
                 for (var j = 0; j < _gridColumnCount; j++)
                 {
-                    _gridContents[i][j].text = GetRandomLetter(_gameParameters.useFrequency);
+                    // Could refactor into a method but it will cause unnecessary overhead
+                    var randomLetter = GetRandomLetter(_gameParameters.useFrequency);
+                    _gridContents[j,i].text = randomLetter.ToString();
+                    _virtualGrid[j,i] = randomLetter;
                 }
             }
         }
     }
 
-    private string GetRandomLetter(bool useFrequency)
+    private char GetRandomLetter(bool useFrequency)
     {
         return useFrequency switch
         {
-            true => HelperFunctions.GetRandomLetter(),
+            true => HelperFunctions.GetRandomLetter(),// GetRandomLetterByFrequency() should be used here when frequency table logic is implemented
             false => HelperFunctions.GetRandomLetter()
         };
     }
