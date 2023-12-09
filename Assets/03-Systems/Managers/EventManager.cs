@@ -126,13 +126,13 @@ namespace HappyTroll
             OnUpdateProgressionMode?.Invoke(progressionType);
         }
 
-        public static event Action<string> OnWordFound;
-        public static void WordFoundEvent(string word)
+        public static event Action<int, int, int> OnWordFound;
+        public static void WordFoundEvent(int index, int columnNumber, int rowNumber)
         {
 #if _ENABLE_LOGS_
-            Debug.Log($"Event - WordFoundEvent: {word}");
+            Debug.Log($"Event - WordFoundEvent: {index} - ({columnNumber},{rowNumber})");
 #endif
-            OnWordFound?.Invoke(word);
+            OnWordFound?.Invoke(index, columnNumber, rowNumber);
         }
 
         public static event Action<int, int> OnGridResize;
@@ -151,6 +151,15 @@ namespace HappyTroll
             Debug.Log($"Event - GridRefillEvent");
 #endif
             OnGridRefill?.Invoke();
+        }
+
+        public static event Action OnGridSearch;
+        public static void GridSearchEvent()
+        {
+#if _ENABLE_LOGS_
+            Debug.Log($"Event - GridSearchEvent");
+#endif
+            OnGridSearch?.Invoke();
         }
     }
 }

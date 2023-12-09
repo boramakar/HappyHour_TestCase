@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8effd4f26e2ff24996ac6e20cdf30f4, type: 3}
   m_Name: GameParameters
   m_EditorClassIdentifier: 
-  searchJobCount: 4
+  wordsPerJob: 4
   fadeDuration: 0.5
   scorePerWord: 1
+  wordListJson: {fileID: 4900000, guid: 915728df15277484c95080bc655b44ed, type: 3}
   levels: []
   gridCellSize: 2
   gridLineWidth: 0.12

@@ -2,9 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using HappyTroll;
-using Sirenix.OdinInspector;
 using TMPro;
-using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class GridHandler : MonoBehaviour
@@ -39,6 +38,8 @@ public class GridHandler : MonoBehaviour
         ClearGrid();
         GenerateGrid();
         FillGrid();
+        
+        GameManager.Instance.currentWordList = JsonUtility.FromJson<WordList>(_gameParameters.wordListJson.text);
     }
 
     private void OnEnable()
@@ -175,6 +176,7 @@ public class GridHandler : MonoBehaviour
         
         ClearGrid();
         GenerateGrid();
+        FillGrid();
     }
 
     private void ClearGrid()
@@ -188,10 +190,41 @@ public class GridHandler : MonoBehaviour
         {
             Destroy(columnsParent.GetChild(i).gameObject);
         }
+        
+        for (var i = gridContentParent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(gridContentParent.GetChild(i).gameObject);
+        }
+
+        _isGridFilled = false;
     }
 
     private void RefillGrid()
     {
         FillGrid();
+    }
+
+    public void GetGridDetails(out int columnCount, out int rowCount, out char[] wordsArray, out int2[] wordIndicesArray, out char[] gridArray)
+    {
+        columnCount = _gridColumnCount;
+        rowCount = _gridRowCount;
+        var wordList = GameManager.Instance.currentWordList.words;
+        wordsArray = string.Join("", wordList).ToCharArray();
+        wordIndicesArray = new int2[wordList.Count];
+        var index = 0;
+        for (var i = 0; i < wordList.Count; i++)
+        {
+            wordIndicesArray[i] = new int2(index, wordList[i].Length);
+            index += wordList[i].Length;
+        }
+        gridArray = new char[_gridColumnCount * _gridRowCount];
+
+        for (var i = 0; i < rowCount; i++)
+        {
+            for (var j = 0; j < columnCount; j++)
+            {
+                gridArray[(i * columnCount) + j] = _virtualGrid[j, i];
+            }
+        }
     }
 }
