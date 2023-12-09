@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace HappyTroll
@@ -160,6 +161,12 @@ namespace HappyTroll
             Debug.Log($"Event - GridSearchEvent");
 #endif
             OnGridSearch?.Invoke();
+        }
+
+        public static event Action<List<Tuple<string,int2,int2>>> OnDisplayResults;
+        public static void DisplayResultsEvent(List<Tuple<string,int2,int2>> foundWords)
+        {
+            OnDisplayResults?.Invoke(foundWords);
         }
     }
 }

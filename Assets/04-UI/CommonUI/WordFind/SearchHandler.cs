@@ -116,7 +116,7 @@ public class SearchHandler : MonoBehaviour
         }
         
         // Display results
-        // EventManager.DisplayResults(this.results);
+        EventManager.DisplayResultsEvent(foundWords);
 
         // Native arrays must be disposed manually.
         wordIndices.Dispose();
