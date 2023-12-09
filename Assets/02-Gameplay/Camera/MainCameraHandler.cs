@@ -15,6 +15,8 @@ public class MainCameraHandler : MonoBehaviour
         _gameParameters = GameManager.Instance.gameParameters;
     }
 
+    // This method assumes all grids will be square
+    // More complex camera adjustment is beyond the scope of this test case
     public void AdjustToGrid(int rowCount, int columnCount, float cellSize)
     {
         transform.position = new Vector3(0, -rowCount, _gameParameters.cameraZOffset);
