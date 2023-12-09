@@ -71,7 +71,7 @@ public class SearchHandler : MonoBehaviour
         jobHandle.Complete();
 
         var foundWords = new List<Tuple<string, int2, int2>>();
-        var wordsList = GameManager.Instance.currentWordList.words;
+        var wordsList = gridHandler.GetCurrentWordList().words;
         for (var i = 0; i < _wordIndicesArray.Length; i++)
         {
             if (results[i].x == -1) continue;

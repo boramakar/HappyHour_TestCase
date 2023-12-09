@@ -12,7 +12,6 @@ namespace HappyTroll
         public GameParameters gameParameters;
 
         public Camera mainCamera;
-        [HideInInspector] public WordList currentWordList; // Should ideally be placed in a different manager
 
         protected override void Awake()
         {
