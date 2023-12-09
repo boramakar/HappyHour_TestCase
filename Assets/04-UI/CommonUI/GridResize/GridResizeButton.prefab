@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 247359672004277402}
   - component: {fileID: 7947879774157097375}
   m_Layer: 0
-  m_Name: GridResizeButton1
+  m_Name: GridResizeButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

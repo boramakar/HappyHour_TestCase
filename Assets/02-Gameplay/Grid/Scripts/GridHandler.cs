@@ -24,6 +24,7 @@ public class GridHandler : MonoBehaviour
     private TextMeshPro[,] _gridContents;
     private char[,] _virtualGrid;
     private WordList _currentWordList;
+    private List<string> _remainingWords;
 
     private void Awake()
     {
@@ -44,6 +45,7 @@ public class GridHandler : MonoBehaviour
         {
             _currentWordList.words[i] = _currentWordList.words[i].ToUpper();
         }
+        _remainingWords = new List<string>(_currentWordList.words);
         // Do the capitalization for bonus section of the list as well for a real implementation
         // Bonus is not used in this test case so it's not needed right now
         
@@ -56,12 +58,24 @@ public class GridHandler : MonoBehaviour
     {
         EventManager.OnGridResize += ResizeGrid;
         EventManager.OnGridRefill += RefillGrid;
+        EventManager.OnWordSelectionSuccess += HandleWordSelectionSuccess;
+        EventManager.OnDisplayResults += HandleFoundWords;
     }
 
     public void OnDisable()
     {
         EventManager.OnGridResize -= ResizeGrid;
         EventManager.OnGridRefill -= RefillGrid;
+        EventManager.OnWordSelectionSuccess -= HandleWordSelectionSuccess;
+        EventManager.OnDisplayResults += HandleFoundWords;
+    }
+
+    private void HandleFoundWords(List<Tuple<string, int2, int2>> wordDetails)
+    {
+        foreach (var wordDetail in wordDetails)
+        {
+            _remainingWords.Remove(wordDetail.Item1);
+        }
     }
 
     private void GenerateGrid()
@@ -134,16 +148,11 @@ public class GridHandler : MonoBehaviour
         _virtualGrid = new char[_gridColumnCount, _gridRowCount];
         _gridContents = new TextMeshPro[_gridColumnCount, _gridRowCount];
 
-        var initialRowOffset = -(_gridRowCount - 1) * _gridCellSize * .5f;
-        var initialColumnOffset = -(_gridColumnCount - 1) * _gridCellSize * .5f;
         for (var i = 0; i < _gridContents.Length; i++)
         {
             var row = i / _gridColumnCount;
             var column = i % _gridColumnCount;
-            var position = new Vector3(
-                initialColumnOffset + (column * _gridCellSize),
-                initialRowOffset + (row * _gridCellSize)
-            );
+            var position = CellToWorldPosition(new int2(column, row));
             _gridContents[column, row] =
                 Instantiate(gridContentPrefab, position, Quaternion.identity, gridContentParent)
                     .GetComponent<TextMeshPro>();
@@ -283,7 +292,6 @@ public class GridHandler : MonoBehaviour
 
         ClearGrid();
         GenerateGrid();
-        FillGrid();
     }
 
     private void ClearGrid()
@@ -306,6 +314,7 @@ public class GridHandler : MonoBehaviour
 
     private void RefillGrid()
     {
+        _remainingWords = new List<string>(_currentWordList.words);
         FillGrid();
     }
 
@@ -314,14 +323,13 @@ public class GridHandler : MonoBehaviour
     {
         columnCount = _gridColumnCount;
         rowCount = _gridRowCount;
-        var wordList = _currentWordList.words;
-        wordsArray = string.Join("", wordList).ToCharArray();
-        wordIndicesArray = new int2[wordList.Count];
+        wordsArray = string.Join("", _remainingWords).ToCharArray();
+        wordIndicesArray = new int2[_remainingWords.Count];
         var index = 0;
-        for (var i = 0; i < wordList.Count; i++)
+        for (var i = 0; i < _remainingWords.Count; i++)
         {
-            wordIndicesArray[i] = new int2(index, wordList[i].Length);
-            index += wordList[i].Length;
+            wordIndicesArray[i] = new int2(index, _remainingWords[i].Length);
+            index += _remainingWords[i].Length;
         }
 
         gridArray = new char[_gridColumnCount * _gridRowCount];
@@ -338,5 +346,25 @@ public class GridHandler : MonoBehaviour
     public WordList GetCurrentWordList()
     {
         return _currentWordList;
+    }
+
+    public List<string> GetRemainingWorGdList()
+    {
+        return _remainingWords;
+    }
+
+    private void HandleWordSelectionSuccess(string word)
+    {
+        _remainingWords.Remove(word);
+    }
+
+    public Vector3 CellToWorldPosition(int2 cellPosition)
+    {
+        var initialRowOffset = -(_gridRowCount - 1) * _gridCellSize * .5f;
+        var initialColumnOffset = -(_gridColumnCount - 1) * _gridCellSize * .5f;
+        return new Vector3(
+            initialColumnOffset + (cellPosition.x * _gridCellSize),
+            initialRowOffset + (cellPosition.y * _gridCellSize)
+        );
     }
 }

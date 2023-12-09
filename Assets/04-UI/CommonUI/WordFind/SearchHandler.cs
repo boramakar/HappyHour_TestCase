@@ -12,7 +12,7 @@ public class SearchHandler : MonoBehaviour
     [SerializeField] private GridHandler gridHandler;
 
     private GameParameters _gameParameters;
-    
+
     private int _columnCount;
     private int _rowCount;
     private char[] _wordsArray;
@@ -31,14 +31,22 @@ public class SearchHandler : MonoBehaviour
 
     private void SearchWords()
     {
-        gridHandler.GetGridDetails(out _columnCount, out _rowCount, out _wordsArray, out _wordIndicesArray, out _gridArray);
-        SearchWordsJob();
+        gridHandler.GetGridDetails(out _columnCount, out _rowCount, out _wordsArray, out _wordIndicesArray,
+            out _gridArray);
+        
+        // Do not search if there are no remaining words to be found
+        if (_wordsArray.Length == 0)
+            EventManager.DisplayResultsEvent(new List<Tuple<string, int2, int2>>());
+        else
+            SearchWordsJob();
     }
 
     private void SearchWordsJob()
     {
-        NativeArray<int2> wordIndices = new NativeArray<int2>(_wordIndicesArray, Allocator.TempJob); // Starting index, word length
-        NativeArray<int3> results = new NativeArray<int3>(_wordIndicesArray.Length, Allocator.TempJob); // Direction, column, row
+        NativeArray<int2>
+            wordIndices = new NativeArray<int2>(_wordIndicesArray, Allocator.TempJob); // Starting index, word length
+        NativeArray<int3>
+            results = new NativeArray<int3>(_wordIndicesArray.Length, Allocator.TempJob); // Direction, column, row
         NativeArray<char> words = new NativeArray<char>(_wordsArray, Allocator.TempJob);
         NativeArray<char> grid = new NativeArray<char>(_gridArray, Allocator.TempJob);
 
@@ -79,42 +87,40 @@ public class SearchHandler : MonoBehaviour
             var word = wordsList[i];
             var xCoordinate = results[i].y;
             var yCoordinate = results[i].z;
+            var distance = word.Length - 1;
             switch (results[i].x)
             {
-                case -1:
-                default:
-                    break;
                 case 0: // Right
                     foundWords.Add(new Tuple<string, int2, int2>(
                         word,
                         new int2(xCoordinate, yCoordinate),
-                        new int2(xCoordinate + word.Length, yCoordinate)
-                        ));
+                        new int2(xCoordinate + distance, yCoordinate)
+                    ));
                     break;
                 case 1: // Left
                     foundWords.Add(new Tuple<string, int2, int2>(
                         word,
                         new int2(xCoordinate, yCoordinate),
-                        new int2(xCoordinate - word.Length, yCoordinate)
+                        new int2(xCoordinate - distance, yCoordinate)
                     ));
                     break;
                 case 2: // Up
                     foundWords.Add(new Tuple<string, int2, int2>(
                         word,
                         new int2(xCoordinate, yCoordinate),
-                        new int2(xCoordinate, yCoordinate + word.Length)
+                        new int2(xCoordinate, yCoordinate + distance)
                     ));
                     break;
                 case 3: // Down
                     foundWords.Add(new Tuple<string, int2, int2>(
                         word,
                         new int2(xCoordinate, yCoordinate),
-                        new int2(xCoordinate, yCoordinate - word.Length)
+                        new int2(xCoordinate, yCoordinate - distance)
                     ));
                     break;
             }
         }
-        
+
         // Display results
         EventManager.DisplayResultsEvent(foundWords);
 

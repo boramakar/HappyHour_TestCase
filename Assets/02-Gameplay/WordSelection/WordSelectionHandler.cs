@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using HappyTroll;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class WordSelectionHandler : MonoBehaviour
@@ -10,6 +11,7 @@ public class WordSelectionHandler : MonoBehaviour
     [SerializeField] private LayerMask letterLayerMask;
     [SerializeField] private LineRenderer selectionLinePrefab;
     [SerializeField] private GridHandler gridHandler;
+    [SerializeField] private Transform selectionLinesParent;
     
     private GameParameters _gameParameters;
     private Camera _raycastCam;
@@ -28,17 +30,21 @@ public class WordSelectionHandler : MonoBehaviour
     {
         EventManager.OnInputPress += StartWordSelection;
         EventManager.OnInputRelease += StopWordSelection;
+        EventManager.OnDisplayResults += MarkFoundWord;
+        EventManager.OnGridRefill += RemoveSelectionLines;
     }
     
     private void OnDisable()
     {
         EventManager.OnInputPress -= StartWordSelection;
         EventManager.OnInputRelease -= StopWordSelection;
+        EventManager.OnDisplayResults -= MarkFoundWord;
+        EventManager.OnGridRefill -= RemoveSelectionLines;
     }
 
     private void StartWordSelection(Vector2 _)
     {
-        _currentSelectionLine = Instantiate(selectionLinePrefab, Vector3.zero, Quaternion.identity);
+        _currentSelectionLine = Instantiate(selectionLinePrefab, Vector3.zero, Quaternion.identity, selectionLinesParent);
         _coroutine = StartCoroutine(WordSelectionCoroutine());
     }
 
@@ -52,7 +58,7 @@ public class WordSelectionHandler : MonoBehaviour
         StopCoroutine(_coroutine);
         _selectedLetters.Clear();
 
-        if (gridHandler.GetCurrentWordList().words.Contains(word))
+        if (gridHandler.GetRemainingWorGdList().Contains(word))
         {
             EventManager.WordSelectionSuccessEvent(word);
         }
@@ -109,6 +115,30 @@ public class WordSelectionHandler : MonoBehaviour
             }
 
             yield return null;
+        }
+    }
+
+    private void MarkFoundWord(List<Tuple<string, int2, int2>> wordDetails)
+    {
+        foreach (var wordDetail in wordDetails)
+        {
+            var lineRenderer = Instantiate(selectionLinePrefab, Vector3.zero, Quaternion.identity, selectionLinesParent);
+            var startingPosition = wordDetail.Item2;
+            var endingPosition = wordDetail.Item3;
+            lineRenderer.positionCount = 2;
+            lineRenderer.SetPositions( new []
+            {
+                gridHandler.CellToWorldPosition(startingPosition),
+                gridHandler.CellToWorldPosition(endingPosition)
+            });
+        }
+    }
+
+    private void RemoveSelectionLines()
+    {
+        for (var i = selectionLinesParent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(selectionLinesParent.GetChild(i).gameObject);
         }
     }
 }

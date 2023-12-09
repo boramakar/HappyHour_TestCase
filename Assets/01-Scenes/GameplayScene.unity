@@ -630,6 +630,7 @@ MonoBehaviour:
     m_Bits: 64
   selectionLinePrefab: {fileID: 4065938184942971336, guid: cefb8eb967d540441823a595c741dba4, type: 3}
   gridHandler: {fileID: 687413915}
+  selectionLinesParent: {fileID: 740359114}
 --- !u!1 &802337428
 GameObject:
   m_ObjectHideFlags: 0

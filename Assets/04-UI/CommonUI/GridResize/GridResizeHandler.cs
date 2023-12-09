@@ -19,4 +19,10 @@ public class GridResizeHandler : MonoBehaviour
     {
         EventManager.GridResizeEvent(int.Parse(rowCountTextMesh.text), int.Parse(columnCountTextMesh.text));
     }
+    
+    public void ResizeAndRefillGrid()
+    {
+        EventManager.GridResizeEvent(int.Parse(rowCountTextMesh.text), int.Parse(columnCountTextMesh.text));
+        EventManager.GridRefillEvent();
+    }
 }
