@@ -30,6 +30,8 @@ public struct WordFindParallelJob : IJobParallelFor
        {
            // Skip to next cell if content doesn't match the first character of word
            if (grid[i] != words[wordStartIndex]) continue;
+           var row = i / columnCount;
+           var column = i % columnCount;
            
            // The code block below looks horrible but performs decently well due to a lot of flow interruption opportunities.
            // By separating each block, we can exit out of each step as soon as we determine a bad result
@@ -45,7 +47,7 @@ public struct WordFindParallelJob : IJobParallelFor
            // potential stack overflow issues.
            
            // Search Right
-           if(columnCount - (i % columnCount) <= wordLength) // Search only if there are enough characters to the right
+           if(columnCount - column >= wordLength) // Search only if there are enough characters to the right
            {
                wordFound = true;
                for (var j = 1; wordFound && j < wordLength; j++)
@@ -57,12 +59,12 @@ public struct WordFindParallelJob : IJobParallelFor
 
                if (wordFound)
                {
-                   results[index] = new int3(0, i % columnCount, i / columnCount);
+                   results[index] = new int3(0, column, row);
                }
            }
            
            // Search Left
-           if(!wordFound && (i % columnCount) + 1 >= wordLength) // Search only if there are enough characters to the left
+           if(!wordFound && column + 1 >= wordLength) // Search only if there are enough characters to the left
            {
                wordFound = true;
                for (var j = 1; wordFound && j < wordLength; j++)
@@ -74,12 +76,12 @@ public struct WordFindParallelJob : IJobParallelFor
 
                if (wordFound)
                {
-                   results[index] = new int3(1, i % columnCount, i / columnCount);
+                   results[index] = new int3(1, column, row);
                }
            }
        
            // Search Up
-           if(!wordFound && rowCount - (i / rowCount) <= wordLength) // Search only if there are enough characters upwards
+           if(!wordFound && rowCount - row >= wordLength) // Search only if there are enough characters upwards
            {
                wordFound = true;
                for (var j = 1; wordFound && j < wordLength; j++)
@@ -91,12 +93,12 @@ public struct WordFindParallelJob : IJobParallelFor
 
                if (wordFound)
                {
-                   results[index] = new int3(2, i % columnCount, i / columnCount);
+                   results[index] = new int3(2, column, row);
                }
            }
            
            // Search Down
-           if(!wordFound && (i / rowCount) + 1 >= wordLength) // Search only if there are enough characters downwards
+           if(!wordFound && row + 1 >= wordLength) // Search only if there are enough characters downwards
            {
                wordFound = true;
                for (var j = 1; wordFound && j < wordLength; j++)
@@ -108,7 +110,7 @@ public struct WordFindParallelJob : IJobParallelFor
 
                if (wordFound)
                {
-                   results[index] = new int3(3, i % columnCount, i / columnCount);
+                   results[index] = new int3(3, column, row);
                }
            }
        }
