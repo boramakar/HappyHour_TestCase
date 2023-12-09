@@ -14,11 +14,13 @@ public class WordFindPopupHandler : MonoBehaviour
     private void OnEnable()
     {
         EventManager.OnDisplayResults += DisplayFoundWords;
+        EventManager.OnWordSelectionSuccess += DisplaySelectedWord;
     }
 
     private void OnDisable()
     {
         EventManager.OnDisplayResults -= DisplayFoundWords;
+        EventManager.OnWordSelectionSuccess -= DisplaySelectedWord;
     }
 
     private void DisplayFoundWords(List<Tuple<string, int2, int2>> foundWords)
@@ -37,6 +39,12 @@ public class WordFindPopupHandler : MonoBehaviour
             }
         }
         
+        wordDisplayPopup.SetActive(true);
+    }
+
+    private void DisplaySelectedWord(string word)
+    {
+        wordDisplayTextMesh.text = word;
         wordDisplayPopup.SetActive(true);
     }
 }

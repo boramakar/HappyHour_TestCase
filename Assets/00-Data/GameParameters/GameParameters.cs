@@ -30,4 +30,5 @@ public class GameParameters : ScriptableObject
     // Camera
     [FoldoutGroup("Camera", true)] public float cameraZOffset;
     [FoldoutGroup("Camera", true)] public float cameraPadding;
+    [FoldoutGroup("Camera", true)] public float raycastDistance;
 }

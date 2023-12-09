@@ -168,5 +168,11 @@ namespace HappyTroll
         {
             OnDisplayResults?.Invoke(foundWords);
         }
+
+        public static event Action<string> OnWordSelectionSuccess;
+        public static void WordSelectionSuccessEvent(string word)
+        {
+            OnWordSelectionSuccess?.Invoke(word);
+        }
     }
 }

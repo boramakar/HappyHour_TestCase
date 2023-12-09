@@ -42,7 +42,7 @@ namespace HappyTroll
             actions.Disable();
         }
 
-        public static Vector2 GetPointerPosition()
+        public Vector2 GetPointerPosition()
         {
             var position = Pointer.current.position.ReadValue();
             return position;

@@ -25,3 +25,4 @@ MonoBehaviour:
   columnCount: 8
   cameraZOffset: -10
   cameraPadding: 0.4
+  raycastDistance: 100
